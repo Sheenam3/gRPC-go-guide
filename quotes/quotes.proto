@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+
+service QuoteGuide {
+
+//simple RPC
+rpc OneDayQuote(OneQuoteRequest) returns (OneQuoteResponse) {}
+
+
+//rpc Server side streaming
+
+rpc ThreeDayQuote(ThreeQuoteRequest) returns (stream ThreeQuoteResponse) {}
+
+//rpc Client Side streaming
+
+rpc Quotes (stream ThreeQuoteRequest) returns (ThreeQuoteResponse) {}
+
+// bi-directional
+
+rpc sayHi (stream OneQuoteRequest) returns (stream OneQuoteResponse){}
+}
+
+
+message OneQuoteRequest {
+string quoteone = 1;
+}
+
+message OneQuoteResponse
+{
+string quote = 1;
+}
+
+message ThreeQuoteRequest {
+string quote1_request = 1;
+string quote2_request = 2;
+string quote3_request =3;
+}
+
+message ThreeQuoteResponse {
+string quote1_response=1;
+string quote2_response=2;
+string quote3_response=3;
+}
