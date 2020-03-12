@@ -4,14 +4,12 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io"
-	"time"	
+	pb "github.com/quotes/quotes"
 	"google.golang.org/grpc"
+	"io"
 	"log"
-	 pb "github.com/quotes/quotes"
-	
+	"time"
 )
-
 
 func printThree(client pb.QuoteGuideClient, quotes *pb.ThreeQuoteRequest) {
 
@@ -36,7 +34,6 @@ func printThree(client pb.QuoteGuideClient, quotes *pb.ThreeQuoteRequest) {
 
 }
 
-
 func printThreeAgain(client pb.QuoteGuideClient, quotes *pb.ThreeQuoteRequest) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -51,13 +48,13 @@ func printThreeAgain(client pb.QuoteGuideClient, quotes *pb.ThreeQuoteRequest) e
 		if err != nil {
 			return err
 		}
-		
+
 	}
 
 	resp, err := stream.CloseAndRecv()
-		if err != nil {
-                        return err
-                }
+	if err != nil {
+		return err
+	}
 
 	log.Printf("resp: quote1: %s", resp)
 
@@ -65,10 +62,9 @@ func printThreeAgain(client pb.QuoteGuideClient, quotes *pb.ThreeQuoteRequest) e
 
 }
 
-
 func sayHelloBi(client pb.QuoteGuideClient, hi *pb.OneQuoteRequest) error {
 
-stream, err := client.SayHi(context.Background())
+	stream, err := client.SayHi(context.Background())
 	if err != nil {
 		return err
 	}
@@ -94,33 +90,29 @@ stream, err := client.SayHi(context.Background())
 
 	return nil
 
-
-
 }
-
 
 func main() {
 
 	flag.Parse()
 	conn, err := grpc.Dial("localhost:4040", grpc.WithInsecure())
-		if err != nil {
-			panic(err)
-		}
+	if err != nil {
+		panic(err)
+	}
 
 	client := pb.NewQuoteGuideClient(conn)
-
 
 	quoteone := "quote1 is here"
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-        defer cancel()
-        quot, err := client.OneDayQuote(ctx, &pb.OneQuoteRequest{Quoteone: quoteone})
-        if err != nil {
-                fmt.Println("Error : ", err)
-        }
-        	log.Printf(" %s",quot.GetQuote())
+	defer cancel()
+	quot, err := client.OneDayQuote(ctx, &pb.OneQuoteRequest{Quoteone: quoteone})
+	if err != nil {
+		fmt.Println("Error : ", err)
+	}
+	log.Printf(" %s", quot.GetQuote())
 
-	printThree(client,&pb.ThreeQuoteRequest{Quote1Request: "quote 1", Quote2Request: "quote 2", Quote3Request: "quote 3" })
-	printThreeAgain(client,&pb.ThreeQuoteRequest{Quote1Request: "quote 1 streaming client", Quote2Request: "quote 2 streaming client", Quote3Request: "quote 3 streaming client" })
-	sayHelloBi(client,&pb.OneQuoteRequest{Quoteone: "Hello, I am Client"})
+	printThree(client, &pb.ThreeQuoteRequest{Quote1Request: "quote 1", Quote2Request: "quote 2", Quote3Request: "quote 3"})
+	printThreeAgain(client, &pb.ThreeQuoteRequest{Quote1Request: "quote 1 streaming client", Quote2Request: "quote 2 streaming client", Quote3Request: "quote 3 streaming client"})
+	sayHelloBi(client, &pb.OneQuoteRequest{Quoteone: "Hello, I am Client"})
 }
